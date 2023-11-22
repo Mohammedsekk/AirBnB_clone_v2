@@ -1,12 +1,11 @@
 #!/usr/bin/python3
 """ Console Module """
 import cmd
-from datetime import datetime
+import sys
 import re
 import os
-import sys
+from datetime import datetime
 import uuid
-
 from models.base_model import BaseModel
 from models import storage
 from models.user import User
@@ -107,6 +106,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_EOF(self, arg):
         """ Handles EOF to exit program """
+        print()
         exit(0)
 
     def help_EOF(self):
@@ -115,7 +115,7 @@ class HBNBCommand(cmd.Cmd):
 
     def emptyline(self):
         """ Overrides the emptyline method of CMD """
-        return False
+        pass
 
     def do_create(self, args):
         """ Create an object of any class"""
