@@ -1,50 +1,47 @@
 #!/usr/bin/python3
-'''A simple Flask web application.
-'''
+
+
+"""utilizing Flask for Web app frame work"""
+
 from flask import Flask, render_template
-
-from models import storage
-from models.state import State
-
+from models import storage, State, City
 
 app = Flask(__name__)
-'''The Flask application instance.'''
-app.url_map.strict_slashes = False
 
 
-@app.route('/states')
-@app.route('/states/<id>')
-def states(id=None):
-    '''The states page.'''
-    states = None
-    state = None
-    all_states = list(storage.all(State).values())
-    case = 404
-    if id is not None:
-        res = list(filter(lambda x: x.id == id, all_states))
-        if len(res) > 0:
-            state = res[0]
-            state.cities.sort(key=lambda x: x.name)
-            case = 2
+@app.route('/states', strict_slashes=False)
+@app.route('/states/<state_id>', strict_slashes=False)
+def show_states(state_id=None):
+    """Dictionary of states"""
+
+    city_list = []
+    all_cities = storage.all(City)
+    all_states = storage.all(State)
+    single_state = None
+
+    if state_id is None:
+        return render_template('9-states.html', state_id=state_id,
+                               all_states=all_states)
+
     else:
-        states = all_states
-        for state in states:
-            state.cities.sort(key=lambda x: x.name)
-        states.sort(key=lambda x: x.name)
-        case = 1
-    ctxt = {
-        'states': states,
-        'state': state,
-        'case': case
-    }
-    return render_template('9-states.html', **ctxt)
+
+        for key, value in all_cities.items():
+
+            if value.__dict__.get('state_id') == state_id:
+                city_list.append(value)
+
+        for key, value in all_states.items():
+            if value.__dict__.get('id') == state_id:
+                single_state = value
+
+        return render_template('9-states.html', city_list=city_list,
+                               single_state=single_state, state_id=state_id)
 
 
 @app.teardown_appcontext
-def flask_teardown(exc):
-    '''The Flask app/request context end event listener.'''
+def teardown_db(self):
+    '''Deletes the current session'''
     storage.close()
 
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='5000')
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')

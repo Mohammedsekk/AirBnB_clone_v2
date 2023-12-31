@@ -1,62 +1,64 @@
 #!/usr/bin/python3
-'''A simple Flask web application.
-'''
-from flask import Flask, render_template
 
+
+"""utilizing Flask for Web app frame work"""
+from flask import Flask, escape, render_template
 
 app = Flask(__name__)
-'''The Flask application instance.'''
-app.url_map.strict_slashes = False
 
 
-@app.route('/')
-def index():
-    '''The home page.'''
-    return 'Hello HBNB!'
+
+@app.route("/", strict_slashes = False)
+def home():
+    """method that defines '/' route for Flask web application"""
+    return "Hello HBNB!"
 
 
-@app.route('/hbnb')
+@app.route("/hbnb", strict_slashes = False)
 def hbnb():
-    '''The hbnb page.'''
-    return 'HBNB'
+    """method that defines '/hbnb' route"""
+    return "HBNB"
 
 
-@app.route('/c/<text>')
-def c_page(text):
-    '''The c page.'''
-    return 'C {}'.format(text.replace('_', ' '))
+@app.route('/c/<text>', strict_slashes = False)
+def show_text(text):
+    """method that defines '/c/' route that uses a variable"""
+    return 'C %s' % escape(text)
 
 
-@app.route('/python/<text>')
-@app.route('/python')
-def python_page(text='is cool'):
-    '''The python page.'''
-    return 'Python {}'.format(text.replace('_', ' '))
+@app.route('/python/', strict_slashes = False)
+@app.route('/python/<text>', strict_slashes = False)
+def show_text2(text="is cool"):
+    """method that defines '/python/' route that uses a variable"""
+    return 'Python %s' % escape(text)
 
 
-@app.route('/number/<int:n>')
-def number_page(n):
-    '''The number page.'''
-    return '{} is a number'.format(n)
+@app.route('/number/<int:n>', strict_slashes = False)
+def show_text3(n):
+    """method that defines '/number/' route that uses a variable"""
+    if isinstance(n, int):
+        return '%d is a number' % n
 
 
-@app.route('/number_template/<int:n>')
-def number_template(n):
-    '''The number_template page.'''
-    ctxt = {
-        'n': n
-    }
-    return render_template('5-number.html', **ctxt)
+@app.route('/number_template/<int:n>', strict_slashes = False)
+def show_text4(n):
+    """method that defines '/number_template/' route that uses a variable"""
+    if isinstance(n, int):
+        return render_template('5-number.html', n=n)
 
 
-@app.route('/number_odd_or_even/<int:n>')
-def number_odd_or_even(n):
-    '''The number_odd_or_even page.'''
-    ctxt = {
-        'n': n
-    }
-    return render_template('6-number_odd_or_even.html', **ctxt)
+@app.route('/number_odd_or_even/<int:n>', strict_slashes = False)
+def show_text5(n):
+    """
+    method that defines '//number_odd_or_even/' route that uses a variable
+    """
+    if n % 2 == 0:
+        num_string = "Number: {} is even".format(n)
 
+    elif n % 2 != 0:
+        num_string = "Number: {} is odd".format(n)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='5000')
+    return render_template('6-number_odd_or_even.html', num_string=num_string)
+
+if __name__ == "__main__":
+    app.run(host="localhost")
